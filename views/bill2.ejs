@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+    <header>
+        <h1>Bill</h1>
+    </header>
+
+    <main class="main-container">
+        <div class="table-container">
+            <table border="2" class="bill">
+                <thead>
+                    <tr>
+                        <th>ProductId</th>
+                        <th>ProductName</th>
+                        <th>ProductPrice</th>
+                    </tr>
+                </thead>
+                <tbody class="item-entry">
+                    <!-- Dynamically populated rows will go here -->
+                </tbody>
+            </table>
+            <div class="total-container" id="money"></div>
+        </div>
+
+        <div class="controls">
+            <div class="action-container">
+                <button onclick="handleQrClick()">Scan QR</button>
+                <input type="text" oninput="handleOnInput()" class="find" placeholder="Search for product 🔍">
+                <form action="/bill/printbill" method="post" class="bill-form">
+                    <button type="submit" onclick="handleBill()">Bill</button>
+                </form>
+            </div>
+            <div id="reader"></div>
+            <div id="dropdownContainer" class="dropdown" style="display: none;"></div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const warningMessage1 = <%- JSON.stringify(warningMessage1) %>;
+        console.log(warningMessage1)
+      if (warningMessage1!=undefined && warningMessage1.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'warning!',
+          text: warningMessage1[0], // Display the first success message
+          showConfirmButton: false,
+          timer: 700 
+        });
+      }
+        var sum = 0;
+        var selectedProduct = [];
+       
+        async function handleQrClick() {
+
+
+        
+  
+    const html5QrCode = new Html5Qrcode("reader"); // Initialize scanner
+    const config = { fps: 10, qrbox: 250 }; // Configuration
+    let hasScanned = false; // Flag to prevent duplicate scans
+
+    try {
+        // Start the scanner and use the back camera if available
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            async (decodedText) => {
+                if (hasScanned) return; // Prevent duplicate scans
+                hasScanned = true; // Set flag to true after first scan
+
+                console.log(`QR Code detected: ${decodedText}`);
+                let searchTerm = decodedText;
+
+                try {
+                    // Fetch product data
+                    let res = await fetch(`/product/qrsearch?q=${encodeURIComponent(searchTerm)}`);
+                    let data = await res.json();
+                    console.log(data);
+
+                    let trow = document.createElement('tr');
+                    trow.classList.add("prod-row");
+                    selectedProduct.push(data);
+                    console.log(selectedProduct);
+
+                    let keys = ['ProductId', 'ProductName', 'ProductPrice'];
+                    let i = 0;
+
+                    // Populate table row with product data
+                    Object.entries(data).map(entry => {
+                        let key = entry[0];
+                        let value=entry[1];
+                        if (keys.includes(key)) {
+                            let tdata = document.createElement('td');
+                            
+                            
+                            tdata.innerHTML = data[keys[i++]];
+                            trow.appendChild(tdata);
+                        }
+                    });
+
+                    document.querySelector('.item-entry').appendChild(trow);
+
+                    // Send data to the backend to create a bill
+                    let fetchedData = await fetch("/bill/create-bill", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    let res2 = await fetchedData.json();
+                    console.log(res2);
+
+//                     // Calculate total amount
+                    let sum = selectedProduct.reduce((acc, item) => acc + item.ProductPrice, 0);
+                    document.querySelector('#money').innerHTML = `<h2>Total Amount = ₹${sum}</h2>`;
+
+                } catch (error) {
+                    console.error("Error processing QR code data:", error);
+                } finally {
+                    // Stop the scanner after successful scan
+                    console.log(selectedProduct)
+                    await html5QrCode.stop();
+                    console.log("QR Code scanning stopped.");
+                }
+            }
+        );
+    } catch (err) {
+        console.error("Error accessing camera:", err);
+    }
+}
+
+
+
+    
+   
+
+
+        
+        async function handleOnInput() {
+
+
+
+            let searchTerm = document.querySelector('.find').value;
+            let container = document.getElementById('dropdownContainer');
+            if (!searchTerm) {
+                container.style.display = 'none';
+                return;
+            }
+            // console.log(know.value);
+
+            let res = await fetch(`/product/search?q=${encodeURIComponent(searchTerm)}`);
+            let data = await res.json();
+            console.log(data)
+            console.log(typeof (data));
+            const dropdownContainer = document.getElementById('dropdownContainer');
+            dropdownContainer.innerHTML = '';
+            if (data.length > 0) {
+                container.style.display = 'block';
+
+
+
+                data.forEach((result) => {
+                    const item = document.createElement('div');
+                    item.classList.add('dropdown-item');
+                    
+                    item.innerHTML = `<strong>Pid = ${result.ProductId}</strong><br>
+                    <strong>Pname = ${result.ProductName}</strong><br>
+                    <strong>PPrice = ${result.ProductPrice}</strong><br>
+                    <div style="display:flex;justify-content:space-around;align-items:center;">
+                    <img src=${result.ProductImage} style="height:18vh;width:8vw;">
+                    <img src=${result.ProductQr} style="height:18vh;width:8vw;">
+                    </div>
+                    <hr>
+                    
+                                      
+                    
+                    
+                    `;
+                    
+                    
+                
+                  
+
+                  
+                    console.log(result);
+                    
+
+
+                    console.log(selectedProduct);
+                    console.log(typeof (selectedProduct))
+                    item.onclick = async function () {
+                        let update=await fetch("http://localhost:5500/product/update",{
+                                method:'POST',
+                                headers:{
+                                    'Content-Type':'application/json'
+                                },
+                                body:JSON.stringify({
+                                    productId:result.ProductId,
+                                    quantity:result.ProductQuantity-1
+                                })
+                            })
+                        let searchField = document.querySelector('.find')
+                        searchField.value = "";
+                        dropdownContainer.style.display = 'none';
+               
+                        let trow = document.createElement('tr');
+                        trow.classList.add("prod-row")
+
+
+                      
+                       
+                        selectedProduct.push(result)
+
+                        console.log(selectedProduct);
+
+
+                        let keys = ['ProductId', 'ProductName', 'ProductPrice']
+                        let i = 0;
+                        [{
+
+                        },]
+                        Object.entries(result).map(entry => {
+
+                            let key = entry[0];
+                            let value = entry[1];
+
+                            if (keys.includes(key)) {
+                                let tdata = document.createElement('td');
+                                if(key=='ProductPrice')
+                                tdata.innerHTML ='₹'+result[keys[i++]];
+                            else
+                                tdata.innerHTML = result[keys[i++]];
+                                trow.appendChild(tdata);
+                                
+                                // console.log(key, value);
+                            }
+                            
+
+                        });
+
+                        document.querySelector('.item-entry').appendChild(trow);
+                        
+                        let data=await fetch("/bill/create-bill",{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json',
+                        },
+                        body:JSON.stringify(result)
+                       })
+                       let res=await data.json();
+                       console.log(res);
+
+                        document.querySelector('#money').innerHTML = `<h2>Total Amount = ₹${sum}</h2>`
+                        
+                    }
+                    dropdownContainer.appendChild(item)
+                });
+            } else {
+                dropdownContainer.style.display = 'none';
+            }
+
+            document.addEventListener('click', (e) => {
+                let inp = document.querySelector('.find')
+                if (!inp.contains(e.target) && !container.contains(e.target)) {
+                    dropdownContainer.style.display = 'none';
+                }
+            })
+
+        }
+
+        async function handleBill() {
+            const tcontent=document.querySelector('tbody')
+            
+              
+             
+            window.location.href="/bill/printbill"
+            
+            
+            
+            let res2=await fetch("/bill/billdelete")
+            let ans=await res2.json();
+            console.log(ans);
+            
+            const entry=document.querySelector('.item-entry');
+            entry.innerHTML=""
+            
+            
+            
+
+
+
+            // console.log(selectedProduct);
+        }
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

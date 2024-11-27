@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container border-dashed border-4 border-black bg-white p-6 rounded-lg shadow-lg w-4/5 mx-auto">
+        <div class="flex justify-between items-center mb-4">
+            <div class="logo-container">
+                <img src="<%= companyLogo %>" alt="Company Logo" class="w-20 h-20 rounded-full border-2">
+            </div>
+            <h1 class="text-2xl font-bold"><%= companyName %></h1>
+        </div>
+        <div class="essential text-center">
+            <p><b>Invoice:</b> #121212</p>
+            <p><b>Date: </b>01/01/2024</p>
+        </div>
+        <div class="invoice-details">
+            <h2 class="text-blue-500 underline font-bold">Total: ₹ 1200</h2>
+        </div>
+    </div>
+</body>
+</html>

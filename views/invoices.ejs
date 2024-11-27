@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+         /* Hide scrollbar for Chrome, Safari and Opera */
+         body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scroll {
+            -ms-overflow-style: none;  
+            scrollbar-width: none; 
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="scroll flex justify-between items-center mb-4">
+        <button type="button" class="button bg-blue-600 cursor-pointer px-2 py-2 rounded-md font-bold text-slate-100 hover:bg-blue-800 transition-all">
+            <a href="/dashboard" class="flex items-center">
+                <span class="font-bold text-3xl mr-1 -mt-1">&larr;</span>
+                <span class="">Back to Dashboard</span>
+            </a>
+        </button>
+        <input type="text" id="searchBar" placeholder="Search Customer . . ." class="border rounded-md p-2 outline-blue-500 placeholder:text-slate-500">
+    </div>
+    <div id="invoiceGroup" class="invoice-group flex items-center justify-between flex-wrap gap-2 mt-3">
+        <% showBill.map((bill, index) => { %>
+            <div class="invoice-card max-height-[38rem] min-w-[24rem] w-[32rem] mx-auto bg-white rounded-lg shadow-md overflow-hidden mb-2 card-box-shadow" key="<%= index %>">
+                <div class="bg-blue-600 py-4 px-3 flex justify-between">
+                    <h2 id='billId' class="text-white text-xl font-bold"><%= bill.CustomerName %></h2>
+                    <p class="text-slate-300 text-lg font-bold billDate"></p>
+                    <p class="text-slate-300 text-lg font-bold billRef"><%= bill.createdAt %></p>
+                </div>
+                <div class="p-4">
+                    <img id="showBillImage" src="<%= bill.BillImage %>" alt="Bill Image" class="w-full rounded-md h-[18rem]">
+                </div>
+                <div class="btn flex justify-center items-center">
+                    <button onClick="openPreview('<%= bill.BillImage %>', '<%= bill.BillId %>')" type="button" class="bg-blue-600 cursor-pointer hover:bg-blue-800 hover:scale-[1.5px] px-4 py-2 rounded-lg mb-3 font-medium text-slate-300">View</button>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <div id="previewModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-neutral-200 p-6 rounded-lg shadow-lg w-fit h-[90%] flex flex-col justify-between gap-2">
+            <div class="flex justify-between w-full ">
+                <button onclick="closePreview()" class="bg-red-500 py-2 px-3 rounded-md cursor-pointer hover:bg-red-700 text-slate-200 font-bold w-fit h-fit">Close</button>
+                <div class="addOn">
+                    <button onclick="downloadImage(document.getElementById('previewBill').src,'InvoiceNo-' + document.getElementById('previewId').innerText + '.jpg')" class="bg-green-500 py-2 px-3 rounded-md cursor-pointer hover:bg-green-700 text-slate-200 font-bold w-fit h-fit">Download</button>
+                    <button onclick="shareToWhatsApp(document.getElementById('previewBill').src, 'InvoiceNo-' + document.getElementById('previewId').innerText + '.jpg')" class="bg-blue-500 py-2 px-3 rounded-md cursor-pointer hover:bg-blue-700 text-slate-200 font-bold w-fit h-fit">Share</button>
+                </div>
+            </div>
+            <div class="overflow-hidden flex items-center justify-center h-full rounded-md">
+                <h1 id="previewId" class="hidden"></h1>
+                <img id="previewBill" class="w-full h-full object-contain rounded-md" src="" alt="Bill Image">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openPreview(src, id) {
+            document.getElementById('previewModal').classList.remove('hidden');
+            document.getElementById('previewBill').src = src;
+            document.getElementById('previewId').innerText = id;
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        function formatDateString(dateStr) {
+            const dateObj = new Date(dateStr);
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            const day = days[dateObj.getDay()];
+            const date = dateObj.getDate();
+            const month = months[dateObj.getMonth()];
+            const year = dateObj.getFullYear();
+
+            return `${day}, ${date} ${month} ${year}`;
+        }
+
+        document.querySelectorAll('.billRef').forEach(billRef => {
+            const formattedDate = formatDateString(billRef.innerText);
+            billRef.previousElementSibling.innerText = formattedDate;
+            billRef.classList.add('hidden');
+        });
+
+        function downloadImage(imageUrl, fileName) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function shareToWhatsApp(imageUrl, invoiceId) {
+            try {
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const file = new File([blob], invoiceId, { type: blob.type });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Share Invoice',
+                        text: 'Check out this invoice!'
+                    });
+                } else {
+                    alert('Sharing not supported on this device');
+                }
+            } catch (error) {
+                console.error('Error sharing image:', error);
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            document.querySelectorAll('.invoice-card').forEach(card => {
+                const customerName = card.querySelector('#billId').innerText.toLowerCase();
+                if (customerName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+div .card-box-shadow {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+div .card-box-shadow:hover {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    scale: 1.4px;
+    transition: all 0.6s ease-in-out
+}
+
+.top-bar {
+    background-color: #1F2937; 
+    color: white;
+    /* padding: 10px; */
+    font-size: 1.2em;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin: -16px -16px 16px -16px; 
+    border-radius: 8px 8px 0 0; 
+}
+
+.container-below {
+    padding: 15px;
+}
+
+
+.tab {
+    background-color: #1F2937;
+    color: white;
+    /* margin: -16px -16px 16px -16px;  */
+    font-size: 1.2em;
+    margin-top: -24px;
+    margin-inline: -24px;
+    padding: 14px;
+}
+
+.hidden {
+    display: none;
+}

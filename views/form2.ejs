@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Light theme styling */
+        .titillium-web-regular {
+  font-family: "Titillium Web", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+      
+
+        body {
+            /* background-color: #222; */
+            
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+         .container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top:5vh;
+         }
+        .form-container {
+            /* background-color: #a5edf8e8; */
+            
+            border: 3px solid #222;
+            padding: 30px;
+            
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            max-width: 800px;
+            
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            /* color: #007bff; */
+            color:#ff5c5c;
+            font-family:cursive;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        label {
+            /* color: white; */
+            color:#222;
+            font-weight: 600;
+            
+        }
+
+        /* Input fields for light theme */
+        .form-control {
+            background-color: #ffffff;
+            color: black;
+            border: 1px solid #ccc;
+            
+            
+        }
+
+        .form-control:focus {
+            /* background-color: #222; */
+            /* color: whitesmoke; */
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Styling read-only field for Product ID */
+        #productId {
+            color: #ff5c5c;
+            font-weight: bold;
+            border:2px solid #222;
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        /* Link styling */
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        a:hover {
+            /* text-decoration: underline; */
+            color: #0056b3;
+            
+        }
+        .form-group input{
+            border: 2px solid skyblue;
+            background:transparent;
+            /* outline:none; */
+        }
+
+        /* Flash message fade-in-out animation */
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Remove spin buttons from number inputs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="titillium-web-regular">
+
+<div class="container">
+    <!-- Flash messages -->
+    <!-- <% if (successMessage && successMessage.length > 0) { %>
+        <div class="alert alert-success show fade" role="alert" style="position: absolute; right: 0%; animation: fadeInOut 2s ease-in-out forwards;">
+            <strong>Success:</strong> <%= successMessage %>
+        </div>
+      <% } %> -->
+    <!-- <% if (warningMessage) { %>
+        <div class="alert alert-success"><%= warningMessage %></div>
+      <% } %> -->
+
+    <div class="form-container">
+        <h2 class="text-center">Add Product Item</h2>
+        <form action="/product/create" method="post" enctype="multipart/form-data">
+            <div class="form-group" >
+                <label for="productName">Product Name</label>
+                <input type="text" name="ProductName" class="form-control" id="productName" placeholder="Enter product name" required>
+                <label for="Category">Category</label>
+                <input type="text" name="ProductCategory" class="form-control" id="Category" placeholder="Enter product category" required>
+            </div>
+            <div class="form-group" style="display: flex;justify-content:center;align-items: center;gap:10px; ">
+                <label for="productId" style="min-width:fit-content;">Product ID</label>&nbsp;
+                <input type="text" name="ProductId" class="form-control" id="productId" value="<%= fid %>" readonly>
+
+                <label for="ProductQuantity">Quantity</label>
+                <input type="number" name="ProductQuantity" class="form-control" id="ProductQuantity" placeholder="Enter Available Quantity" required>
+            </div>
+            
+            <div class="form-group" style="display: flex;justify-content:center;align-items: center;gap:10px; ">
+                <label for="productPrice" style="min-width: fit-content;">Price (in Rs)</label>
+                <input type="number" name="ProductPrice" class="form-control" id="productPrice" placeholder="Enter product price" required>
+               
+                <label for="productImage">Image URL</label>
+                <br><input type="file" name="image" class="form-control" id="productImage" style="color:white;">
+            </div>
+            
+
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            <div class="text-center mt-3">
+                <a href="/bill">CART</a>
+                <a href="/product/entry">INVENTORY</a>
+                <a href="/product/del">DELETE</a>
+                <a href="/product/update">UPDATE</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const successMessage = <%- JSON.stringify(successMessage) %>;
+    if (successMessage && successMessage.length > 0) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: successMessage[0],
+            showConfirmButton: false,
+            timer: 1500
+        });
+    }
+</script>
+</body>
+</html>

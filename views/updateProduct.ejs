@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> -->
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,300;1,400;1,600;1,700&display=swap');
+        .roboto-regular {
+  font-family: "Roboto", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+} */
+        
+    body {
+      background-color: #0d1117; /* GitHub dark mode background */
+      color: #c9d1d9; /* Text color for readability */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      color: #58a6ff;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      color: #c9d1d9;
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 5px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      color: #fff;
+      background-color: #238636;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #2ea043;
+    }
+    @keyframes fadeInOut {
+  0% {
+    opacity: 0; /* Start hidden */
+  }
+  10% {
+    opacity: 1; /* Quickly fade in */
+  }
+  90% {
+    opacity: 1; /* Stay visible */
+  }
+  100% {
+    opacity: 0; /* Fade out */
+  }
+}
+    .drop-down{
+        width:100%;
+        height:40%;
+        color:white;
+        border: 5px groove rgba(0, 0, 0, 0.685);
+        border-radius: 5px;
+        
+        
+
+    }
+    a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 600;
+            
+            margin-right:10px;
+            
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #79c0ff;
+        }
+  </style>
+    
+</head>
+<body>
+    <div class="container">
+      <!-- <% if (successMessage1 && successMessage1.length > 0) { %>
+        <div class="alert alert-success show fade" role="alert" style="position: absolute;right: 0%;animation: fadeInOut 2s ease-in-out forwards;">
+            <strong>Sucess :</strong> <%= successMessage1  %>
+        
+
+
+        </div>
+      <% } %> -->
+      
+        <h1>Update Product</h1>
+        Search :<input type="text" name="psearch" id="pupdate" oninput="handleUpdate()" placeholder="search the product 🔍">
+        <div class="drop-down roboto-regular" style="display: none;"></div>
+        <form action='/product/update' method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" required />
+          </div>
+          <div class="form-group">
+            <label for="productId">Product Id:</label>
+            <input type="text" id="productId" name="productId" required />
+          </div>
+          <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" step="0.01" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="productImage">Product Image:</label>
+            <input type="file" id="productImage" name="image" />
+          </div>
+          <input type="submit" value="Update Product" onclick="handleSubmit()"/>
+        </form>
+        <div class="text-center mt-0">
+        <a href="/bill">CART</a>
+        <a href="/product/entry">INVENTORY</a>
+        <a href="/product/del">DELETE</a>
+        <a href="/">ADD</a>
+      </div>
+      </div>
+    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const successMessage1 = <%- JSON.stringify(successMessage1) %>;
+      if (successMessage1!=undefined && successMessage1.length > 0) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: successMessage1[0], // Display the first success message
+          showConfirmButton: false,
+          timer: 1500 // Auto-close after 1.5 seconds
+        });
+      }
+
+    
+    async function handleUpdate(){
+        let inp=document.querySelector('#pupdate')
+        let dropdown=document.querySelector('.drop-down')
+        let pname=document.querySelector("#productName")
+        let pimage=document.querySelector("#productImage")
+        let pprice=document.querySelector('#price')
+        let ppid=document.querySelector('#productId')
+        let pquantity=document.querySelector('#quantity')
+
+        let find=await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`)
+        let res=await find.json()
+        dropdown.style.display="block"
+        
+        
+        dropdown.innerHTML=""
+        
+        res.map((item)=>{
+            
+            let div=document.createElement('div');
+            
+            div.innerHTML=`
+            
+            <h3>pid: ${item.ProductId}</h3>
+            <h3>pname: ${item.ProductName}</h3>
+            <hr>
+            `
+            
+            
+            dropdown.appendChild(div)
+            div.onclick=async function(){
+                
+                inp.value=""
+                dropdown.style.display='none'
+                
+                let data=await fetch(`http://localhost:5500/product/search/${item.ProductId}`)
+                let prod=await data.json()
+                ppid.value=item.ProductId
+                pname.value=item.ProductName
+                pprice.value=item.ProductPrice
+                pquantity.value=item.ProductQuantity
+                
+
+
+                
+
+            }
+            
+            
+
+
+        })
+
+        function handleSubmit(){
+            
+            window.location.href="http://localhost:5500/product/entry"
+        }
+        
+        
+        
+        
+        
+
+        
+
+
+}
+
+</script>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Product</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Dark theme background and text colors */
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .form-container {
+            background-color: #161b22;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 50px;
+            position: relative;
+        }
+        h2 {
+            color: #f85149;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        label {
+            color: #c9d1d9;
+        }
+        .btn-danger {
+            width: 100%;
+            background-color: #f85149;
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: #da3633;
+        }
+        #dropdownContainer {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #21262d;
+            color: #c9d1d9; /* Light text color for visibility */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .dropdown-item {
+            padding: 10px;
+            color: #c9d1d9; /* Ensures text is visible on dark background */
+            border-bottom: 1px solid #30363d;
+        }
+        .dropdown-item:hover {
+            background-color: #30363d;
+            color:yellow;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h2>Delete Product</h2>
+        <form>
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" class="form-control bg-dark text-light" id="remove" placeholder="Enter product name" required oninput="handleOnInput()">
+            </div>
+            
+        </form>
+        <div id="dropdownContainer" style="display: none;"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    async function handleOnInput() {
+        let inp = document.getElementById('remove');
+        let cont = document.getElementById('dropdownContainer');
+
+        if (!inp.value) {
+            cont.style.display = 'none';
+            return;
+        }
+
+        let data = await fetch(`/product/search?q=${encodeURIComponent(inp.value)}`);
+        let res = await data.json();
+
+        cont.innerHTML = '';
+        if (res.length > 0) {
+            cont.style.display = 'block';
+            res.forEach((entry) => {
+                const elem = document.createElement('div');
+                elem.classList.add('dropdown-item');
+                elem.innerHTML = `
+                    <strong>ID:</strong> ${entry.ProductId}<br>
+                    <strong>Name:</strong> ${entry.ProductName}<br>
+                    <strong>Price:</strong> ${entry.ProductPrice}<br>
+                    <hr>
+                `;
+                cont.appendChild(elem);
+
+                let del = document.createElement('button');
+                del.innerText = "Delete";
+                del.classList.add('btn', 'btn-danger', 'btn-sm', 'mt-2');
+                elem.appendChild(del);
+
+                del.onclick = async function () {
+                    elem.style.textDecoration = 'line-through';
+                    elem.style.textDecorationColor = 'red';
+                    elem.style.textDecorationThickness = '3px';
+
+                    let response = await fetch(`/product/delete?q=${encodeURIComponent(entry.ProductName)}`);
+                    let result = await response.json();
+
+                    let p = document.createElement('p');
+                    p.innerText = result.message || 'Product deleted successfully';
+                    elem.appendChild(p);
+
+                    inp.value = ""; // Clear input field after deletion
+                    cont.style.display = 'none';
+                };
+            });
+        } else {
+            cont.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

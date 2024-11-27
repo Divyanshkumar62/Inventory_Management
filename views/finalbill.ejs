@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head type="text/css" media="print">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+    <link rel="stylesheet" href="/css/print.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            
+            
+            
+            /* background-color: #f4f4f4; */
+        }
+        /* .print{
+            visibility: hidden;
+        } */
+        .container {
+            border:3.7px dashed black;
+            min-height: 80%;
+            width: 80%;
+            position: relative;
+            
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            padding-bottom: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            
+            
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .company-info, .customer-info {
+            width: 50%;
+            float: left;
+            margin-top: 20px;
+        }
+        .clear {
+            clear: both;
+        }
+        .invoice-details {
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid red;
+            
+            
+        }
+        thead th{
+            background-color:blanchedalmond;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        
+        .total {
+            float: right;
+            
+            text-align: right;
+        }
+        .total h2 {
+            color: blue;
+            text-decoration: underline;
+            margin: 0;
+
+        }
+        .logo{
+            height: 80px;
+            width:80px;
+            position: absolute;
+            border-radius: 50%;
+            left:20px;
+            border: 2px solid whitesmoke;
+            /* display: inline-block; */
+        }
+        .cart{
+            position: absolute;
+            right:20px;
+        }
+        .company-info,.customer-info{
+            font-weight: bold;
+        }
+        input{
+            font-weight: lighter;
+            outline: none;
+            border:none;
+            
+        
+            font-size: 14px;
+            height: 20px;
+            
+            
+            
+            box-sizing: border-box; 
+            overflow: visible;
+            
+            
+
+        }
+        input .cmail{
+            
+            border: 2px solid green;
+
+        }
+        button{
+            padding:5px;
+            font-weight: bold;
+            outline: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: red;
+            color:wheat;
+        }
+    
+    </style>
+</head>
+
+    
+<body>
+    <div class="container">
+        <!-- Header -->
+         
+         
+        
+         
+         <button onclick="handleRedirect()" class="cart" style="background-color: green;">Cart</button>
+         
+        <div class="header" id="top">
+            <img src="/images/logo.png" alt="" class="logo">
+            <h1>Kanha Ltd.</h1>
+            <p><b>Invoice</b> #<%=billId%></p>
+            <p><b>Date: </b><%let date=new Date()%>
+                <%=date.toDateString()%></p>
+        </div>
+
+        <!-- Company and Customer Information -->
+         
+        <div class="company-info">
+            <h3>From:</h3>
+            
+            <p>Mob.no: <input type="number" maxlength="10" minlength="10" class="mobo" value="8810856707"></p>
+            <p>Address:<input type="text" value="Greater Noida,Uttar Pradesh"></p>
+            <p>Email: <input type="email" value="gkanha1500@gmail.com"></p>
+        </div>
+        <div class="customer-info">
+            <h3>To:</h3>
+            <p>Customer Name <input type="text" class="customer" id="cname" value="kg" required></p>
+            
+            
+            <p>Email: <input type="email" name="email" id="cmail" value="gpranshu945@gmail.com" required></p>
+            <p>Mob.No: <input type="number" name="phoneNo" id="cnumber" value="8810846607" required></p>
+        </div>
+        <div class="clear"></div>
+
+        <!-- Invoice Details -->
+        <div class="invoice-details">
+            <button onclick="handlePrint()" class="print" style="background-color:cadetblue;color: bisque;">Print</button>
+            <button id="rzp-button1" onclick="handlePay()">Pay with Razorpay</button>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ProductId</th>
+                        <th>ProductName</th>
+                        <th>Unit Price</th>
+                        
+                    </tr>
+                </thead>
+                    <tbody>
+                        <%data.map((item)=>{ %>
+                            <tr>
+                                <td><%=item.ProductId%></t>
+                                <td><%=item.ProductName%></td>
+                                <td><%=item.ProductPrice%></td>
+                                
+                            </tr>
+                       <% })%>
+
+
+
+                    </tbody>
+                
+                
+            </table>
+        </div>
+
+        <!-- Total -->
+        <div class="total">
+            <h2>Total: ₹ <%=billAmount%></h2>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+   <script>
+    const content2 = document.querySelector('body');
+        
+        
+        
+       const amount='<%=billAmount%>'
+       
+   
+      let paymentDone=false;
+    const handlePay=async (e)=>{
+        
+        let name=document.querySelector('#cname').value;
+        let email=document.querySelector('#cmail').value;
+        let phone=document.querySelector('#cnumber').value;
+
+        if(!(name && email && phone)){
+            await Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: "All field are necessary", // Display the first success message
+          showConfirmButton: false,
+          timer: 1500 // Auto-close after 1.5 seconds
+        });
+            
+        }
+
+     // Select the content to capture
+     if(name&&email&&phone){
+    const canvas=await html2canvas(content2)
+  // Convert canvas to a data URL (base64 string)
+  
+        
+        let response=await fetch("http://localhost:5500/bill/payment",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({amount:amount})
+
+        })
+        let order=await response.json()
+        console.log(order)
+    
+    
+
+var options = {
+    "key": "rzp_test_tfx9olkFQFIWqI", // Enter the Key ID generated from the Dashboard
+    "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Kanha Ltd.",
+    "description": "Product Transaction",
+    "image": '/images/logo.png',
+    "order_id":order.orderId,
+    "callback_url":"http://localhost:5500/bill/",
+    "handler": async function (response){
+        // alert(response.razorpay_payment_id);
+        // alert(response.razorpay_order_id);
+        // alert(response.razorpay_signature)
+        await Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Payment Succesfull', // Display the first success message
+          showConfirmButton: false,
+          timer: 1500 // Auto-close after 1.5 seconds
+        });
+        paymentDone=true;
+        const screenshot =await canvas.toDataURL('image/png');
+        
+        
+  
+        
+         
+          
+
+        let msgData={
+            name,
+            phone,
+        }
+        
+
+        let msg=await fetch("http://localhost:5500/bill/send-message",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(msgData)
+         })
+        
+         let msgResp=await msg.json()
+         console.log(msgResp)
+
+         let obj={
+            cname:name,
+            cmail:email,
+            billimg:screenshot
+        }
+        window.location.href="http://localhost:5500/bill/"   
+        try{
+        let mailer=await fetch("http://localhost:5500/bill/send-email",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(obj)
+        })
+        
+        let mailResp=await mailer.json()
+        console.log(mailResp)     
+        
+    }catch(err){
+        console.log(err)
+    }
+    
+
+ 
+        
+    },
+    "prefill": {
+        "name": name,
+        "email":email,
+        "contact":phone,
+        
+    },
+    "notes": {
+        "address": "KanhaLtd."
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+
+    rzp1.open();
+    // const generated_signature = await hmac_sha256(order.orderId + "|" + response.razorpay_payment_id, 'rzp_test_tfx9olkFQFIWqI');
+    // alert(generated_signature==response.razorpay_signature)
+    
+    e.preventDefault();
+    
+}
+}
+
+    
+
+
+    
+  
+
+ 
+    function handleRedirect(){
+        let tcontent=document.querySelector('tbody');
+        tcontent.innerHTML=""
+        window.location.href="/bill/"
+    }
+    async function handlePrint(){
+        const content = document.querySelector('body'); // Select the content to capture
+
+ const canvas=await html2canvas(content)
+  // Convert canvas to a data URL (base64 string)
+  const screenshot = canvas.toDataURL('image/png');
+//   console.log('Screenshot taken:', screenshot);
+  
+  
+  const mobo=document.querySelector('#cnumber')
+  const customer=document.querySelector('.customer')
+  
+  const obj={
+    screenshot:screenshot,
+    mobo:mobo.value,
+    customer:customer.value,
+
+  }
+
+ let resp=await fetch("/bill/savebillimage",{
+            method:'PUT',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(obj)
+         })
+         if (!resp.ok) {
+      throw new Error(`Failed to update: ${resp.statusText}`);
+    }
+    const data = await resp.json(); // Wait for JSON response
+    console.log('Bill updated successfully:', data);
+      
+ 
+        
+    window.print()
+    }
+
+   </script>
+</body>
+</html>

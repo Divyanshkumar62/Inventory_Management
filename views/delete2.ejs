@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Product</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+        }
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 50px;
+        }
+        h2 {
+            color: #dc3545;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .btn-danger {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h2>Delete Product</h2>
+        <form>
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" class="form-control" id="remove" placeholder="Enter product name" oninput="handleOnInput()" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete Product</button>
+        </form>
+    </div>
+    <div id="dropdownContainer" class="dropdown" style="display: none;"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+       
+    async function handleOnInput(){
+        let inp=document.getElementById('remove');
+        let cont=document.querySelector('#dropdownContainer');
+        if(!inp.value){
+            cont.style.display='none'
+            return;
+        }
+        let data=await fetch(`/product/search?q=${encodeURIComponent(inp.value)}`)
+        let res=await data.json();
+        console.log(res);
+        
+        cont.innerHTML='';
+        if(res.length>0){
+            cont.style.display='block';
+            res.forEach((entry)=>{
+               const elem=document.createElement('div');
+               elem.classList.add('dropdown-item')
+               elem.innerHTML=`<strong>${entry.ProductId}</strong><br>
+               <strong>${entry.ProductName}</strong><br>
+               <strong>${entry.ProductPrice}</strong><br><hr>`
+               cont.appendChild(elem)
+               let del=document.createElement('button');
+            del.innerText="Delete"
+
+            del.classList.add('btn')
+            elem.appendChild(del)
+            del.onclick=async function(e){
+                console.log(e);
+                elem.style.textDecoration='line-through'
+                elem.style.textDecorationColor='red'
+                elem.style.textDecorationThickness='3px'
+                 let data=await fetch(`/product/delete?q=${encodeURIComponent(entry.ProductName)}`)
+                 let res=await data.json();
+                 console.log(res);
+                 inp.value=""
+                 let p=document.createElement('p')
+                 p.innerText=res;
+                 elem.appendChild(p);
+                 
+
+                 
+                 
+            }
+            })
+          
+            
+            
+            
+            
+            
+
+           
+            
+        }
+        
+    }
+</script>
+</body>
+</html>

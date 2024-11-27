@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container{
+            display: flex;
+            gap:20px;
+            flex-direction: column;
+            height: 100%;
+            align-items: center;
+            
+            width:100%;
+        }
+        .container .image{
+            width:60%;
+            height:60%;
+
+            
+            
+            /* border: 2px solid red; */
+        }
+        .page{
+            padding: 10px;
+            border: 2px solid blue;
+        }
+        .info{
+            display: flex;
+            gap:40px;
+            justify-content: center;
+            color:green
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        
+    <button onclick="handleShowImage()">Show Image</button>
+    Bill id : <input type="text" class="bid">
+    
+    <div class="info">
+    <p class="name"></p>
+    <p class="number"></p>
+    </div>
+    <div class="container">
+    </div>
+        
+    </div>
+
+    
+</body>
+<script>
+    async function handleShowImage(){
+        document.querySelector('button').style.display='none'
+        let bill_id=document.querySelector('.bid').value
+        bill_id=bill_id.toUpperCase()
+    let data=await fetch(`/bill/showimage?q=${encodeURIComponent(bill_id)}`);
+    let res=await data.json();
+    
+    console.log(res.ans)
+    let div=document.querySelector('.container')
+    res.ans.map((item)=>{
+
+        let nam=document.querySelector('.name')
+        let num=document.querySelector('.number')
+    
+        
+         if(item.BillImage){
+    
+            nam.innerHTML=`<h3>Customer Name : ${item.CustomerName}</h3>`
+        num.innerHTML=`<h3>Mobile.No : ${item.MobileNumber}</h3>`
+            
+            
+        let img=document.createElement('img')
+    
+    img.setAttribute('src',item.BillImage)
+    img.classList.add('image')
+
+    div.appendChild(img)
+         }
+
+    
+    })
+
+
+
+  }
+</script>
+</html>

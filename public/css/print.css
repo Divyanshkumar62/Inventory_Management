@@ -1,0 +1,6 @@
+
+@media print{
+    .print,.cart,#rzp-button1{
+    visibility: hidden;
+    }
+}

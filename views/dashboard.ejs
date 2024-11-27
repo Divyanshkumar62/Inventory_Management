@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+     /* Hide scrollbar for Chrome, Safari and Opera */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scroll {
+            -ms-overflow-style: none;  
+            scrollbar-width: none; 
+        }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+  <div class="flex scroll">
+    
+    <aside class="w-64 bg-gray-800 text-white min-h-screen">
+      <div class="p-4 flex items-center space-x-2">
+        
+        <span class="text-3xl font-bold">Inventory</span>
+      </div>
+      <nav class="mt-6 space-y-2" style=" font-family: 'Poppins', sans-serif;">
+        <a href="#" class="flex items-center px-4 py-2 text-gray-200 bg-gray-900">Dashboard</a>
+        <a href="/bill/" class="flex items-center px-4 py-2 hover:bg-gray-700">Cart</a>
+        <a href="/product/entry" class="flex items-center px-4 py-2 hover:bg-gray-700">Inventory</a>
+        <a href="/product/update" class="flex items-center px-4 py-2 hover:bg-gray-700">Update Product</a>
+        <a href="/product/del" class="flex items-center px-4 py-2 hover:bg-gray-700">Delete Product</a>
+        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-700">Packages</a>
+        <a href="/bill/invoices" class="flex items-center px-4 py-2 hover:bg-gray-700">Invoices</a>
+        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-700">Purchase Orders</a>
+        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-700">Bills</a>
+        <a href="/bill/customize" class="flex items-center px-4 py-2 hover:bg-gray-700">Customizations</a>
+        <a href="#" class="flex items-center px-4 py-2 hover:bg-gray-700">Reports</a>
+      </nav>
+    </aside>
+      
+
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+      <!-- Header -->
+      <!-- <div class="top-bar p-2 flex justify-center items-center">
+
+      </div> -->
+      <div class="flex justify-between items-center mb-6 tab">
+        <h1 class="text-2xl font-bold">Sales Activity</h1>
+        <div class="flex space-x-4">
+          <div class="flex items-center space-x-2">
+            <span>Emporium</span>
+            <img src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250" alt="User" class="w-8 h-8 rounded-full">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Activity & Inventory Summary -->
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded text-center card-box-shadow">
+          <div class="text-blue-500 font-semibold text-2xl">25</div>
+          <div class="text-gray-600">To be Packed</div>
+        </div>
+        <div class="bg-white p-4 rounded text-center card-box-shadow">
+          <div class="text-blue-500 font-semibold text-2xl">1</div>
+          <div class="text-gray-600">To be Shipped</div>
+        </div>
+        <div class="bg-white p-4 rounded text-center card-box-shadow">
+          <div class="text-blue-500 font-semibold text-2xl">3</div>
+          <div class="text-gray-600">To be Delivered</div>
+        </div>
+        <div class="bg-white p-4 rounded text-center card-box-shadow">
+          <div class="text-blue-500 font-semibold text-2xl">4</div>
+          <div class="text-gray-600">To be Invoiced</div>
+        </div>
+      </div>
+
+      <!-- Inventory Summary & Product Details -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 rounded card-box-shadow ">
+          <div class="top-bar p-2 flex justify-center items-center">
+            <h2 class="text-lg font-bold my-2">Inventory Summary</h2>
+          </div>
+          <div class="container-below">
+            <h2 class="text-lg font-semibold">Quantity in Hand</h2>
+            <p class="text-gray-500 mb-4">421</p>
+            <h2 class="text-lg font-semibold">Quantity to be Received</h2>
+            <p class="text-gray-500">216</p>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded card-box-shadow">
+          <div class="top-bar p-2 flex justify-center items-center">
+            <h2 class="text-lg font-bold my-2">Product Details</h2>
+          </div>
+          <div class="text-red-500 font-semibold">Low Stock Items</div>
+          <div class="text-gray-600">All Item Group: 45</div>
+          <div class="text-gray-600">All Items: 255</div>
+          <div class="mt-4 text-center">
+            <span class="text-green-500 font-semibold">Active Items</span>
+            <div class="relative w-20 h-20 mx-auto">
+              <div class="w-full h-full rounded-full bg-gray-200"></div>
+              <div class="absolute inset-0 flex items-center justify-center text-green-500 font-bold">81%</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded card-box-shadow">
+          <div class="top-bar p-2 flex justify-center items-center">
+            <h2 class="text-lg font-bold my-2">Top Selling Items</h2>
+          </div>
+          <div class="flex justify-center items-center gap-16 mt-12 overflow-x-auto">
+            <div class="text-center">
+              <img src="https://prd.place/400" class="w-16 h-16 mx-auto" alt="Item 1">
+              <div class="text-gray-600">Desktop</div>
+              <div class="font-semibold">16 sets</div>
+            </div>
+            <div class="text-center">
+              <img src="https://prd.place/17" class="w-16 h-16 mx-auto" alt="Item 2">
+              <div class="text-gray-600">Speakers</div>
+              <div class="font-semibold">12 pcs</div>
+            </div>
+            <!-- Additional items can be added here similarly -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Purchase Order & Sales Order -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white p-4 rounded card-box-shadow">
+          <div class="top-bar p-2 flex justify-center items-center">
+            <h2 class="text-lg font-bold my-2">Purchase Order</h2>
+          </div>
+          <div class="text-lg">Quantity Ordered</div>
+          <div class="text-blue-500 font-semibold text-2xl mb-2">519.00</div>
+          <div class="text-lg">Total Cost</div>
+          <div class="text-blue-500 font-semibold text-2xl">$12,760.16</div>
+        </div>
+        <div class="bg-white p-4 rounded card-box-shadow">
+          <div class="top-bar p-2 flex justify-center items-center">
+            <h2 class="text-lg font-bold my-2">Daily Sales</h2>
+          </div>
+          <h2 class="text-lg">Total Products sold:</h2>
+          <p class="text-blue-500 font-semibold text-2xl mb-2">24</p>
+          <h2 class="text-lg">Total Invoices: </h2>
+          <p class="text-blue-500 font-semibold text-2xl mb-2">11</p>
+          <h2 class="text-lg">Total Amount: </h2>
+          <p class="text-blue-500 font-semibold text-2xl">$2,760.16</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

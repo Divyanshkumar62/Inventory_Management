@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Shop - Product List</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    <style type="text/css">
+        /* Dark mode background and text styling */
+        
+        
+
+        body {
+            background-color: #1e1e2f;
+            color: #e0e0e0;
+            font-family:Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            
+        }
+
+        h1 {
+            color: #ff8c00;
+            margin-bottom: 20px;
+        }
+
+        /* Pagination link styling */
+        a {
+            color: #61dafb;
+            margin-right: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #ff8c00;
+        }
+
+        /* Table styling */
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        th {
+            background-color: #33334d;
+            color: #fff;
+            padding: 12px;
+        }
+
+        .tdata:nth-child(odd) {
+            background-color: #2b2b3d;
+        }
+
+        .tdata:nth-child(even) {
+            background-color: #3c3c5b;
+        }
+
+        td {
+            padding: 12px;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            font-size: 18px;
+            
+        }
+
+        img {
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+
+            img {
+                height: 12vh;
+                width: 20vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Inventory</h1>
+    
+    <% for(let i = 2; i <= pagecount; i++) { %>
+        <a href="/product/entry?page=<%= i %>">page<%= i %></a>
+    <% } %>
+    <div class="form-group">
+
+        <label for="productName">Search : </label>
+        <input type="text" name="ProductName" class="form-control" id="productName" placeholder="Enter product name" oninput="handleOnInput()">
+    </div>
+    <h2>Total Product =<span style="color: yellow;"><%=count%></span></h2>
+    
+
+    <table>
+        <thead>
+        <tr>
+            <th>ProductId</th>
+            <th>ProductName</th>
+            <th>ProductPrice</th>
+            <th>ProductImage</th>
+            <th>ProductQr</th>
+            <th>ProductQuantity</th>
+            <th>ProductStatus</th>
+            <th>ProductCategory</th>
+            
+            
+        </tr>
+    </thead>
+        <tbody id="product-body">
+        <% ans.map((item) => { %>
+            <% let stockLevel = item.ProductQuantity; %>
+            <tr class="tdata">
+                
+                <td><%= item.ProductId %></td>
+                <td><%= item.ProductName %></td>
+                <td>₹<%= item.ProductPrice %></td>
+                <td><img src="/<%= item.ProductImage.replace(/\\/g, '/') %>" alt="Product Image" style="height: 18vh; width: 9vw;"></td>
+                <td><img src="<%= item.ProductQr %>" alt="QR Code"></td>
+                <td><%= item.ProductQuantity %></td>
+                <td><% if (stockLevel > 10) { %>
+                    <div style="background-color: rgb(80, 226, 80); width: 10rem; height: 0.8rem; border-radius: 20px;"></div>
+                  <% } else if (stockLevel < 10 && stockLevel>0) { %>
+                    <div style="background-color: orange; width: 10rem; height: 0.8rem; border-radius: 20px;"></div>
+                  <% } else { %>
+                    <div style="background-color: red; width: 10rem; height: 0.8rem; border-radius: 20px;"></div>
+                  <% } %></td>
+                  <td><%=item.ProductCategory%></td>
+
+                 
+                
+            </tr>
+        <% }) %>
+    </tbody>
+    </table>
+    <canvas id="myChart" width="400" height="400"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      
+      
+        async function handleOnInput(){
+           let inp=document.querySelector('#productName')
+            
+            let search=await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`)
+            let tbody=document.querySelector('#product-body')
+            let ans=await search.json();
+            // console.log(ans)
+            tbody.innerHTML=""
+            ans.forEach(item => {
+                let stockLevel = `${item.ProductQuantity}`
+                if (stockLevel > 10) {
+  stockIndicator = `<div style="background-color: rgb(80, 226, 80); width: 10rem; height: 0.8rem; border-radius: 20px;"></div>`;
+} else if(stockLevel<10 &&stockLevel >0) {
+  stockIndicator = `<div style="background-color: orange; width: 10rem; height: 0.8rem; border-radius: 20px;"></div>`;
+}
+else{
+    stockIndicator = `<div style="background-color:red; width: 10rem; height: 0.8rem; border-radius: 20px;"></div>`;
+}
+            let tr=document.createElement('tr')
+            
+            tr.className = 'tdata';
+            tr.innerHTML=`
+             <td>${item.ProductId}</td>
+                    <td>${item.ProductName}</td>
+                    <td>₹ ${item.ProductPrice}</td>
+                    <td><img src="/${item.ProductImage.replace(/\\/g, '/')}" alt="Product Image" style="height: 18vh; width: 9vw;"></td>
+                    <td><img src="${item.ProductQr}" alt="QR Code"></td>
+                    <td>${item.ProductQuantity}</td>
+                    <td>${stockIndicator}</td>
+                    <td>${item.ProductCategory}</td>
+                    
+            `
+            tbody.appendChild(tr)
+            })
+
+
+        }
+
+        
+        //  const ctx = document.getElementById('myChart').getContext('2d');
+        // const myChart = new Chart(ctx, {
+        //     type: 'pie',
+        //     data: {
+        //         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        //         datasets: [{
+        //             label: '# of Votes',
+        //             data: [2,5,21,1,4,8],
+        //             backgroundColor: [
+        //                 'rgba(255, 99, 132, 0.2)',
+        //                 'rgba(54, 162, 235, 0.2)',
+        //                 'rgba(255, 206, 86, 0.2)',
+        //                 'rgba(75, 192, 192, 0.2)',
+        //                 'rgba(153, 102, 255, 0.2)',
+        //                 'rgba(255, 159, 64, 0.2)'
+        //             ],
+        //             borderColor: [
+        //                 'rgba(255, 99, 132, 1)',
+        //                 'rgba(54, 162, 235, 1)',
+        //                 'rgba(255, 206, 86, 1)',
+        //                 'rgba(75, 192, 192, 1)',
+        //                 'rgba(153, 102, 255, 1)',
+        //                 'rgba(255, 159, 64, 1)'
+        //             ],
+        //             borderWidth: 1
+        //         }]
+        //     },
+        //     options: {
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: true
+        //             }
+        //         }
+        //     }
+        // });
+    
+    </script>
+</body>
+</html>
+
