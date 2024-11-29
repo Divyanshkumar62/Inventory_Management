@@ -117,7 +117,7 @@
     <script>
         async function handleOnInput() {
             let inp = document.querySelector('#productName');
-            let search = await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`);
+            let search = await fetch(`https://inventory-management-b412.onrender.com/product/search?q=${encodeURIComponent(inp.value)}`);
             let tbody = document.querySelector('#product-body');
             let ans = await search.json();
             tbody.innerHTML = "";
